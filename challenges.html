@@ -3,74 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Challenge Archive — Mathemagicland</title>
-<meta name="description" content="An archive of past math and art community challenges.">
-<link rel="stylesheet" href="style.css">
+<title>Challenges — Mathemagicland</title>
+<meta name="description" content="An archive of past math/art community challenges from Mathemagicland.">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="site-header">
+<canvas id="tess-bg"></canvas>
+
+<nav class="site-nav">
   <div class="wrap">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">π</span>
-      <span class="brand-name">Mathemagicland</span>
-    </a>
-    <nav class="main-nav">
-      <a href="tutoring.html">Tutoring</a>
-      <a href="video.html">Video Creation</a>
-      <a href="workshops.html">Workshops</a>
-      <a href="challenges.html" aria-current="page">Challenge Archive</a>
-    </nav>
+    <a href="index.html" class="brand">Mathemagicland</a>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <ul class="axis">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tutoring.html">Tutoring</a></li>
+      <li><a href="video.html">Video Creation</a></li>
+      <li><a href="challenges.html" class="current">Challenges</a></li>
+      <li><a href="workshops.html">Workshops</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="wrap">
+    <span class="label eyebrow">archive</span>
+    <h1>Past math/art challenges.</h1>
+    <p class="lede">A running record of the community challenges I've hosted — the prompt,
+      the process, and what people made.</p>
   </div>
 </header>
 
-<main>
+<section class="section">
   <div class="wrap">
-    <section class="hero">
-      <p class="eyebrow">Quadrant IV — the archive</p>
-      <h1>Challenge Archive</h1>
-      <p class="lede">A running record of past math and art community challenges — what was asked, and how the community answered.</p>
-    </section>
 
-    <section class="section">
-      <p class="tag-line">Past challenges</p>
-      <h2>Archive</h2>
+    <!--
+      HOW TO ADD A NEW CHALLENGE
+      Copy one <div class="entry-card ..."> block below and edit its contents.
+      Class options for the card: "math", "art", or "both" (controls the tag color).
+      Remove the .placeholder-note div below once you have real entries in.
+    -->
 
-      <div class="placeholder-note">
-        These are example entries showing the format — replace with your real past challenges (title, date, category, short description, and a link to the video or submissions if you have one).
+    <div class="card-grid">
+
+      <div class="entry-card both">
+        <span class="tag">Math + Art</span>
+        <h3>Sample challenge title</h3>
+        <p>Replace this with a short description of the prompt — what participants were
+          asked to create, and any constraints (e.g. "using only parabolas," "one color,"
+          "under 5 minutes on Desmos").</p>
+        <span class="date">Month Year · replace with real date</span>
       </div>
 
-      <div style="margin-top:22px;">
-        <div class="archive-entry">
-          <div class="archive-meta">
-            <span>#001</span>
-            <span>Month Year</span>
-            <span>Math</span>
-          </div>
-          <h3>Challenge title</h3>
-          <p>One or two sentences describing the prompt and what participants were asked to do.</p>
-        </div>
-
-        <div class="archive-entry art">
-          <div class="archive-meta">
-            <span>#002</span>
-            <span>Month Year</span>
-            <span>Art</span>
-          </div>
-          <h3>Challenge title</h3>
-          <p>One or two sentences describing the prompt and what participants were asked to do.</p>
-        </div>
+      <div class="entry-card math">
+        <span class="tag">Math</span>
+        <h3>Sample challenge title</h3>
+        <p>Replace this with a short description of the prompt and what came out of it.
+          Link to the video or gallery once it's up.</p>
+        <span class="date">Month Year · replace with real date</span>
       </div>
-    </section>
+
+      <div class="entry-card art">
+        <span class="tag">Art</span>
+        <h3>Sample challenge title</h3>
+        <p>Replace this with a short description of the prompt and what came out of it.
+          Link to the video or gallery once it's up.</p>
+        <span class="date">Month Year · replace with real date</span>
+      </div>
+
+    </div>
+
+    <p class="placeholder-note">
+      These three cards are placeholders — swap in your real past challenges (title,
+      description, date, and a link if you have one) and delete this note.
+    </p>
+
   </div>
-</main>
+</section>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>Mathemagicland</p>
-    <p><a href="https://youtube.com/@mathemagicland" class="link-btn">▶ YouTube.com/@mathemagicland</a></p>
+<footer>
+  <div class="wrap footer-row">
+    <div>
+      <span class="label">Contact</span>
+      <a href="mailto:mathemagicland314159@gmail.com">mathemagicland314159@gmail.com</a>
+    </div>
+    <div class="foot-links">
+      <a href="https://www.youtube.com/@mathemagicland" target="_blank" rel="noopener">YouTube</a>
+      <a href="index.html">Home</a>
+      <a href="tutoring.html">Tutoring</a>
+      <a href="video.html">Video</a>
+      <a href="workshops.html">Workshops</a>
+    </div>
   </div>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>
