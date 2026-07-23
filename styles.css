@@ -206,6 +206,13 @@ p{ margin: 0 auto 1em; color: var(--ink-soft); max-width: 62ch; }
 
 .hero-art{ max-width: 480px; margin: 0 auto; }
 
+.intersect-section{ padding-top: 0; }
+.intersect-graph-wrap{
+  max-width: 640px;
+  margin: 0 auto;
+}
+.intersect-graph-wrap svg{ width: 100%; height: auto; }
+
 .hero .eyebrow{
   display: inline-block;
   font-family: var(--mono);
