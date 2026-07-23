@@ -4,102 +4,104 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Video Creation — Mathemagicland</title>
-<meta name="description" content="Math and art videos: explainers, tutorials, live Desmos streams, and community challenges on YouTube.">
-<link rel="stylesheet" href="style.css">
+<meta name="description" content="Math and art videos on YouTube from Mathemagicland — tutorials, explainers, challenges, and live Desmos streams. Open to sponsorships and collaborations.">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="site-header">
+<canvas id="tess-bg"></canvas>
+
+<nav class="site-nav">
   <div class="wrap">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">π</span>
-      <span class="brand-name">Mathemagicland</span>
-    </a>
-    <nav class="main-nav">
-      <a href="tutoring.html">Tutoring</a>
-      <a href="video.html" aria-current="page">Video Creation</a>
-      <a href="workshops.html">Workshops</a>
-      <a href="challenges.html">Challenge Archive</a>
-    </nav>
+    <a href="index.html" class="brand">Mathemagicland</a>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <ul class="axis">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tutoring.html">Tutoring</a></li>
+      <li><a href="video.html" class="current">Video Creation</a></li>
+      <li><a href="challenges.html">Challenges</a></li>
+      <li><a href="workshops.html">Workshops</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="wrap">
+    <span class="label eyebrow">youtube.com/@mathemagicland</span>
+    <h1>Videos where math gets drawn.</h1>
+    <p class="lede">Tutorials, math explainers, community art/math challenges, and live
+      Desmos graphing streams. Open to sponsorships and collaborations.</p>
+    <div class="hero-actions">
+      <a href="https://www.youtube.com/@mathemagicland" target="_blank" rel="noopener" class="btn btn-red">Watch on YouTube</a>
+    </div>
   </div>
 </header>
 
-<main>
-  <div class="wrap">
-    <section class="hero">
-      <p class="eyebrow">Quadrant II — @mathemagicland</p>
-      <h1>Video Creation</h1>
-      <p class="lede">Math and art videos made for people who want to see the idea, not just be told it.</p>
-      <a href="https://youtube.com/@mathemagicland" class="link-btn">▶ Watch on YouTube — @mathemagicland</a>
-    </section>
+<section class="section">
+  <div class="wrap two-col">
+    <div>
+      <h2>What's on the channel</h2>
+      <ul class="tick-list">
+        <li><strong>Community challenges</strong> — prompts anyone can join, math and art combined</li>
+        <li><strong>Tutorials</strong> — step-by-step walkthroughs of math and art techniques</li>
+        <li><strong>Math explainers</strong> — concepts broken down visually</li>
+        <li><strong>Desmos live streams</strong> — graphing in real time, building things together</li>
+      </ul>
+    </div>
 
-    <section class="section">
-      <p class="tag-line">What's on the channel</p>
-      <h2>Four kinds of videos</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h3>Math/art community challenges</h3>
-          <p>Open prompts where viewers submit their own math-meets-art creations.</p>
-        </div>
-        <div class="card">
-          <h3>Tutorials</h3>
-          <p>Step-by-step walkthroughs for building mathematical art and visualizations.</p>
-        </div>
-        <div class="card">
-          <h3>Math explainers</h3>
-          <p>Concepts broken down visually — the kind of explanation that makes something click.</p>
-        </div>
-        <div class="card">
-          <h3>Live Desmos graphing streams</h3>
-          <p>Real-time graphing sessions, building up equations and art live.</p>
-        </div>
+    <div>
+      <h2>Sponsorships &amp; collaborations</h2>
+      <div class="form-card">
+        <form data-mailto="mathemagicland314159@gmail.com" data-subject="Sponsorship / collaboration inquiry">
+          <div class="field">
+            <label for="v-name">Your name</label>
+            <input type="text" id="v-name" name="name" data-label="Name" required>
+          </div>
+          <div class="field">
+            <label for="v-org">Company / channel</label>
+            <input type="text" id="v-org" name="org" data-label="Company or channel">
+          </div>
+          <div class="field">
+            <label for="v-type">Type of inquiry</label>
+            <select id="v-type" name="type" data-label="Inquiry type">
+              <option value="Sponsorship">Sponsorship</option>
+              <option value="Collaboration">Collaboration</option>
+              <option value="Product / brand partnership">Product / brand partnership</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="v-email">Your email</label>
+            <input type="email" id="v-email" name="email" data-label="Reply-to email" required>
+          </div>
+          <div class="field">
+            <label for="v-message">Message</label>
+            <textarea id="v-message" name="message" data-label="Message" placeholder="Tell me a bit about what you have in mind." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-solid">Send message</button>
+          <p class="form-note">Opens your email app with this filled in, addressed to mathemagicland314159@gmail.com.</p>
+        </form>
       </div>
-    </section>
-
-    <section class="section">
-      <p class="tag-line">Sponsorships &amp; collaborations</p>
-      <h2>Work together</h2>
-      <p>Interested in sponsoring a video or collaborating on a challenge, tutorial, or stream? Send the details below.</p>
-
-      <form action="mailto:mathemagicland314159@gmail.com" method="post" enctype="text/plain">
-        <div class="field">
-          <label for="v-name">Name</label>
-          <input type="text" id="v-name" name="Name" required>
-        </div>
-        <div class="field">
-          <label for="v-org">Company / channel (if applicable)</label>
-          <input type="text" id="v-org" name="Organization">
-        </div>
-        <div class="field">
-          <label for="v-email">Email</label>
-          <input type="email" id="v-email" name="Email" required>
-        </div>
-        <div class="field">
-          <label for="v-type">What kind of collaboration?</label>
-          <select id="v-type" name="Collaboration type">
-            <option>Sponsorship</option>
-            <option>Video collaboration</option>
-            <option>Challenge partnership</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="v-message">Details</label>
-          <textarea id="v-message" name="Message" required></textarea>
-        </div>
-        <button type="submit" class="btn">Open email to send</button>
-        <p class="form-note">Or email directly: mathemagicland314159@gmail.com</p>
-      </form>
-    </section>
+    </div>
   </div>
-</main>
+</section>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>Mathemagicland</p>
-    <p><a href="https://youtube.com/@mathemagicland" class="link-btn">▶ YouTube.com/@mathemagicland</a></p>
+<footer>
+  <div class="wrap footer-row">
+    <div>
+      <span class="label">Contact</span>
+      <a href="mailto:mathemagicland314159@gmail.com">mathemagicland314159@gmail.com</a>
+    </div>
+    <div class="foot-links">
+      <a href="https://www.youtube.com/@mathemagicland" target="_blank" rel="noopener">YouTube</a>
+      <a href="index.html">Home</a>
+      <a href="tutoring.html">Tutoring</a>
+      <a href="challenges.html">Challenges</a>
+      <a href="workshops.html">Workshops</a>
+    </div>
   </div>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>
