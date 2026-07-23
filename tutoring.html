@@ -4,97 +4,111 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tutoring — Mathemagicland</title>
-<meta name="description" content="Math tutoring for grades 5–12 and college, in a style built around understanding, not just answers.">
-<link rel="stylesheet" href="style.css">
+<meta name="description" content="Math tutoring for grades 5–12 and college, from Mathemagicland.">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="site-header">
+<canvas id="tess-bg"></canvas>
+
+<nav class="site-nav">
   <div class="wrap">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">π</span>
-      <span class="brand-name">Mathemagicland</span>
-    </a>
-    <nav class="main-nav">
-      <a href="tutoring.html" aria-current="page">Tutoring</a>
-      <a href="video.html">Video Creation</a>
-      <a href="workshops.html">Workshops</a>
-      <a href="challenges.html">Challenge Archive</a>
-    </nav>
+    <a href="index.html" class="brand">Mathemagicland</a>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <ul class="axis">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tutoring.html" class="current">Tutoring</a></li>
+      <li><a href="video.html">Video Creation</a></li>
+      <li><a href="challenges.html">Challenges</a></li>
+      <li><a href="workshops.html">Workshops</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="wrap">
+    <span class="label eyebrow">domain: grades 5–college</span>
+    <h1>Math tutoring, one on one.</h1>
+    <p class="lede">Support for 5th through 12th grade math, and college-level coursework —
+      algebra through calculus and beyond. Tell me what you're working on and I'll get back to you.</p>
   </div>
 </header>
 
-<main>
-  <div class="wrap">
-    <section class="hero">
-      <p class="eyebrow">Quadrant I — one-on-one</p>
-      <h1>Tutoring</h1>
-      <p class="lede">Math help for grades 5 through 12, and college. Sessions are built around how a student actually thinks, not a one-size lesson plan.</p>
-      <div class="chip-row">
-        <span class="chip">5th – 8th grade</span>
-        <span class="chip">9th – 12th grade</span>
-        <span class="chip">College</span>
+<section class="section">
+  <div class="wrap two-col">
+    <div>
+      <h2>What tutoring looks like</h2>
+      <ul class="tick-list">
+        <li>One-on-one sessions, in person or online</li>
+        <li>Grades 5–12: arithmetic through pre-calc, geometry, algebra I &amp; II</li>
+        <li>College-level: calculus, statistics, and other coursework support</li>
+        <li>Homework help, test prep, or building confidence from the ground up</li>
+        <li>Flexible scheduling — weekly, occasional, or exam-crunch sessions</li>
+      </ul>
+    </div>
+
+    <div>
+      <h2>Send a message</h2>
+      <div class="form-card">
+        <form data-mailto="mathemagicland314159@gmail.com" data-subject="Tutoring inquiry">
+          <div class="field">
+            <label for="t-name">Your name</label>
+            <input type="text" id="t-name" name="name" data-label="Name" required>
+          </div>
+          <div class="field">
+            <label for="t-parent">Student's name (if different)</label>
+            <input type="text" id="t-parent" name="student" data-label="Student">
+          </div>
+          <div class="field">
+            <label for="t-grade">Grade level</label>
+            <select id="t-grade" name="grade" data-label="Grade level">
+              <option value="5th grade">5th grade</option>
+              <option value="6th grade">6th grade</option>
+              <option value="7th grade">7th grade</option>
+              <option value="8th grade">8th grade</option>
+              <option value="9th grade">9th grade</option>
+              <option value="10th grade">10th grade</option>
+              <option value="11th grade">11th grade</option>
+              <option value="12th grade">12th grade</option>
+              <option value="College">College</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="t-subject">Subject / topic</label>
+            <input type="text" id="t-subject" name="subject" data-label="Subject" placeholder="e.g. Algebra II, Calculus I, test prep" required>
+          </div>
+          <div class="field">
+            <label for="t-email">Your email</label>
+            <input type="email" id="t-email" name="email" data-label="Reply-to email" required>
+          </div>
+          <div class="field">
+            <label for="t-message">Message</label>
+            <textarea id="t-message" name="message" data-label="Message" placeholder="What are you looking for help with, and how often?" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-solid">Send message</button>
+          <p class="form-note">Opens your email app with this filled in, addressed to mathemagicland314159@gmail.com.</p>
+        </form>
       </div>
-    </section>
-
-    <section class="section">
-      <p class="tag-line">What sessions look like</p>
-      <h2>Built around the student, not a script</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h3>Concept first, procedure second</h3>
-          <p>We work toward understanding why a method works, so it sticks past the next test.</p>
-        </div>
-        <div class="card">
-          <h3>Visual &amp; hands-on</h3>
-          <p>Expect graphs, sketches, and Desmos, not just worksheets — math as something you can see.</p>
-        </div>
-        <div class="card">
-          <h3>Flexible pacing</h3>
-          <p>Whether it's homework help, test prep, or getting ahead, sessions adjust to what's needed most.</p>
-        </div>
-        <div class="card">
-          <h3>Any level, one subject</h3>
-          <p>Math only — from pre-algebra through calculus and beyond — taught with real depth.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <p class="tag-line">Get in touch</p>
-      <h2>Ask about tutoring</h2>
-      <p>Fill this out and it'll open in your email app, addressed to Mathemagicland — nothing sends automatically.</p>
-
-      <form action="mailto:mathemagicland314159@gmail.com" method="post" enctype="text/plain">
-        <div class="field">
-          <label for="t-name">Your name (or your student's name)</label>
-          <input type="text" id="t-name" name="Name" required>
-        </div>
-        <div class="field">
-          <label for="t-grade">Grade level</label>
-          <input type="text" id="t-grade" name="Grade level" placeholder="e.g. 10th grade, Algebra 2">
-        </div>
-        <div class="field">
-          <label for="t-email">Your email</label>
-          <input type="email" id="t-email" name="Email" required>
-        </div>
-        <div class="field">
-          <label for="t-message">What would you like help with?</label>
-          <textarea id="t-message" name="Message" required></textarea>
-        </div>
-        <button type="submit" class="btn">Open email to send</button>
-        <p class="form-note">Or email directly: mathemagicland314159@gmail.com</p>
-      </form>
-    </section>
+    </div>
   </div>
-</main>
+</section>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>Mathemagicland</p>
-    <p><a href="https://youtube.com/@mathemagicland" class="link-btn">▶ YouTube.com/@mathemagicland</a></p>
+<footer>
+  <div class="wrap footer-row">
+    <div>
+      <span class="label">Contact</span>
+      <a href="mailto:mathemagicland314159@gmail.com">mathemagicland314159@gmail.com</a>
+    </div>
+    <div class="foot-links">
+      <a href="https://www.youtube.com/@mathemagicland" target="_blank" rel="noopener">YouTube</a>
+      <a href="index.html">Home</a>
+      <a href="video.html">Video</a>
+      <a href="challenges.html">Challenges</a>
+      <a href="workshops.html">Workshops</a>
+    </div>
   </div>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>
