@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<canvas id="tess-bg"></canvas>
+<canvas id="tess-bg" data-pattern="truchet"></canvas>
 
 <nav class="site-nav">
   <div class="wrap">
@@ -29,7 +29,7 @@
   <div class="wrap hero-grid">
     <div>
       <span class="eyebrow">f(x) = math + art</span>
-      <h1>Where numbers become pictures.</h1>
+      <h1>The intersection of math and art.</h1>
       <p class="lede">Tutoring, videos, and workshops that treat math as something you draw,
         build, and play with, not just solve for, because creativity belongs in the equation too.</p>
       <div class="hero-actions">
@@ -38,82 +38,29 @@
         <a href="challenges.html" class="btn btn-blue">See past challenges</a>
       </div>
     </div>
-
-    <div class="hero-art" aria-hidden="true">
-      <svg viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
-        <g stroke="#E7E1CE" stroke-width="1">
-          <line x1="60" y1="20" x2="60" y2="380"/>
-          <line x1="140" y1="20" x2="140" y2="380"/>
-          <line x1="220" y1="20" x2="220" y2="380"/>
-          <line x1="300" y1="20" x2="300" y2="380"/>
-          <line x1="380" y1="20" x2="380" y2="380"/>
-          <line x1="460" y1="20" x2="460" y2="380"/>
-          <line x1="20" y1="60" x2="500" y2="60"/>
-          <line x1="20" y1="140" x2="500" y2="140"/>
-          <line x1="20" y1="220" x2="500" y2="220"/>
-          <line x1="20" y1="300" x2="500" y2="300"/>
-        </g>
-        <line x1="60" y1="20" x2="60" y2="380" stroke="#212A35" stroke-width="1.5"/>
-        <line x1="20" y1="300" x2="500" y2="300" stroke="#212A35" stroke-width="1.5"/>
-
-        <path d="M60,220 Q110,120 160,220 T260,220 T360,220 T460,220"
-              fill="none" stroke="#2C6E93" stroke-width="3"/>
-        <path d="M80,300 Q270,20 460,300"
-              fill="none" stroke="#E0503C" stroke-width="3"/>
-        <path d="M260,220
-                 a10,10 0 0 1 10,-10
-                 a20,20 0 0 1 20,20
-                 a30,30 0 0 1 -30,30
-                 a40,40 0 0 1 -40,-40
-                 a50,50 0 0 1 50,-50"
-              fill="none" stroke="#C6941F" stroke-width="2.5" stroke-linecap="round"/>
-
-        <circle cx="160" cy="220" r="5" fill="#2C6E93"/>
-        <circle cx="360" cy="220" r="5" fill="#2C6E93"/>
-        <circle cx="270" cy="20" r="5" fill="#E0503C"/>
-        <circle cx="80" cy="300" r="5" fill="#E0503C"/>
-        <circle cx="460" cy="300" r="5" fill="#E0503C"/>
-        <circle cx="260" cy="220" r="4" fill="#C6941F"/>
-      </svg>
-    </div>
   </div>
 </header>
 
-<section class="plot">
+<section class="section intersect-section">
   <div class="wrap">
-    <div class="plot-intro">
-      <h2>Four ways in</h2>
-      <span class="label">choose a point on the graph</span>
-    </div>
+    <div class="intersect-graph-wrap">
+      <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A curve labeled math and a curve labeled art, crossing at a star.">
+        <g stroke="#E7E1CE" stroke-width="1">
+          <line x1="60" y1="60" x2="60" y2="240"/>
+          <line x1="540" y1="60" x2="540" y2="240"/>
+          <line x1="60" y1="60" x2="540" y2="60"/>
+          <line x1="60" y1="240" x2="540" y2="240"/>
+          <line x1="300" y1="60" x2="300" y2="240"/>
+        </g>
 
-    <div class="points">
-      <a href="tutoring.html" class="point c-blue">
-        <span class="coord">(1, tutoring)</span>
-        <h3>Tutoring</h3>
-        <p>One-on-one math tutoring for grades 5 through 12, plus college-level support. Send over what you're working on.</p>
-        <span class="go">Go to tutoring <span class="arrow">→</span></span>
-      </a>
+        <path d="M60,240 Q300,180 540,60" fill="none" stroke="#2C6E93" stroke-width="3"/>
+        <path d="M60,60 Q300,120 540,240" fill="none" stroke="#E0503C" stroke-width="3"/>
 
-      <a href="video.html" class="point c-red">
-        <span class="coord">(2, video)</span>
-        <h3>Video Creation</h3>
-        <p>Tutorials, math explainers, and live Desmos graphing streams on YouTube. Open to sponsorships and collaborations.</p>
-        <span class="go">Go to video <span class="arrow">→</span></span>
-      </a>
+        <path d="M300,120 L308,144 L332,150 L308,156 L300,180 L292,156 L268,150 L292,144 Z" fill="#C6941F"/>
 
-      <a href="challenges.html" class="point c-gold">
-        <span class="coord">(3, challenges)</span>
-        <h3>Challenges</h3>
-        <p>An archive of past math/art community challenges — the prompts, the process, and what people made.</p>
-        <span class="go">Browse challenges <span class="arrow">→</span></span>
-      </a>
-
-      <a href="workshops.html" class="point c-violet">
-        <span class="coord">(4, workshops)</span>
-        <h3>Workshops</h3>
-        <p>Hands-on math/art workshops for groups — classrooms, clubs, and events.</p>
-        <span class="go">Go to workshops <span class="arrow">→</span></span>
-      </a>
+        <text x="548" y="58" font-family="Space Mono, monospace" font-size="15" fill="#2C6E93">math</text>
+        <text x="548" y="246" font-family="Space Mono, monospace" font-size="15" fill="#E0503C">art</text>
+      </svg>
     </div>
   </div>
 </section>
