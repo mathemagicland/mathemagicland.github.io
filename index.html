@@ -3,76 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mathemagicland — Math &amp; Art Tutoring, Videos &amp; Workshops</title>
-<meta name="description" content="Math tutoring for grades 5–12 and college, math/art YouTube videos, community challenges, and group workshops.">
-<link rel="stylesheet" href="style.css">
+<title>Mathemagicland — Math &amp; Art, Plotted Together</title>
+<meta name="description" content="Mathemagicland: math tutoring for grades 5–college, math/art videos, community challenges, and group workshops.">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="site-header">
+<canvas id="tess-bg"></canvas>
+
+<nav class="site-nav">
   <div class="wrap">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">π</span>
-      <span class="brand-name">Mathemagicland</span>
-    </a>
-    <nav class="main-nav">
-      <a href="tutoring.html">Tutoring</a>
-      <a href="video.html">Video Creation</a>
-      <a href="workshops.html">Workshops</a>
-      <a href="challenges.html">Challenge Archive</a>
-    </nav>
+    <a href="index.html" class="brand">Mathemagicland</a>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <ul class="axis">
+      <li><a href="index.html" class="current">Home</a></li>
+      <li><a href="tutoring.html">Tutoring</a></li>
+      <li><a href="video.html">Video Creation</a></li>
+      <li><a href="challenges.html">Challenges</a></li>
+      <li><a href="workshops.html">Workshops</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">f(x) = math + art</span>
+      <h1>Where numbers become pictures.</h1>
+      <p class="lede">Tutoring, videos, and workshops that treat math as something you draw,
+        build, and play with, not just solve for, because creativity belongs in the equation too.</p>
+      <div class="hero-actions">
+        <a href="tutoring.html" class="btn btn-solid">Get tutoring</a>
+        <a href="video.html" class="btn btn-red">Watch on YouTube</a>
+        <a href="challenges.html" class="btn btn-blue">See past challenges</a>
+      </div>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <g stroke="#E7E1CE" stroke-width="1">
+          <line x1="60" y1="20" x2="60" y2="380"/>
+          <line x1="140" y1="20" x2="140" y2="380"/>
+          <line x1="220" y1="20" x2="220" y2="380"/>
+          <line x1="300" y1="20" x2="300" y2="380"/>
+          <line x1="380" y1="20" x2="380" y2="380"/>
+          <line x1="460" y1="20" x2="460" y2="380"/>
+          <line x1="20" y1="60" x2="500" y2="60"/>
+          <line x1="20" y1="140" x2="500" y2="140"/>
+          <line x1="20" y1="220" x2="500" y2="220"/>
+          <line x1="20" y1="300" x2="500" y2="300"/>
+        </g>
+        <line x1="60" y1="20" x2="60" y2="380" stroke="#212A35" stroke-width="1.5"/>
+        <line x1="20" y1="300" x2="500" y2="300" stroke="#212A35" stroke-width="1.5"/>
+
+        <path d="M60,220 Q110,120 160,220 T260,220 T360,220 T460,220"
+              fill="none" stroke="#2C6E93" stroke-width="3"/>
+        <path d="M80,300 Q270,20 460,300"
+              fill="none" stroke="#E0503C" stroke-width="3"/>
+        <path d="M260,220
+                 a10,10 0 0 1 10,-10
+                 a20,20 0 0 1 20,20
+                 a30,30 0 0 1 -30,30
+                 a40,40 0 0 1 -40,-40
+                 a50,50 0 0 1 50,-50"
+              fill="none" stroke="#C6941F" stroke-width="2.5" stroke-linecap="round"/>
+
+        <circle cx="160" cy="220" r="5" fill="#2C6E93"/>
+        <circle cx="360" cy="220" r="5" fill="#2C6E93"/>
+        <circle cx="270" cy="20" r="5" fill="#E0503C"/>
+        <circle cx="80" cy="300" r="5" fill="#E0503C"/>
+        <circle cx="460" cy="300" r="5" fill="#E0503C"/>
+        <circle cx="260" cy="220" r="4" fill="#C6941F"/>
+      </svg>
+    </div>
   </div>
 </header>
 
-<main>
+<section class="plot">
   <div class="wrap">
-    <section class="hero">
-      <p class="eyebrow">y = f(x), where x is curiosity</p>
-      <h1>Where math finds its shape.</h1>
-      <p class="lede">Tutoring, videos, and workshops that treat math as something you draw, build, and play with — not just solve for.</p>
-    </section>
+    <div class="plot-intro">
+      <h2>Four ways in</h2>
+      <span class="label">choose a point on the graph</span>
+    </div>
 
-    <section class="plane">
-      <div class="quadrants">
-        <a class="quadrant" href="tutoring.html">
-          <span class="q-label">I · one-on-one</span>
-          <h2 class="q-title">Tutoring</h2>
-          <p class="q-desc">Math support for grades 5–12 and college, tailored to how each student thinks.</p>
-          <span class="q-arrow">start here →</span>
-        </a>
-        <a class="quadrant" href="video.html">
-          <span class="q-label">II · @mathemagicland</span>
-          <h2 class="q-title">Video Creation</h2>
-          <p class="q-desc">Explainers, live Desmos graphing streams, and math/art tutorials on YouTube.</p>
-          <span class="q-arrow">watch &amp; collaborate →</span>
-        </a>
-        <a class="quadrant" href="workshops.html">
-          <span class="q-label">III · for groups</span>
-          <h2 class="q-title">Workshops</h2>
-          <p class="q-desc">Hands-on math/art sessions for classrooms, clubs, and community groups.</p>
-          <span class="q-arrow">book a session →</span>
-        </a>
-        <a class="quadrant" href="challenges.html">
-          <span class="q-label">IV · the archive</span>
-          <h2 class="q-title">Challenge Archive</h2>
-          <p class="q-desc">A running record of past math and art community challenges.</p>
-          <span class="q-arrow">browse past prompts →</span>
-        </a>
-      </div>
-      <div class="origin-mark">0,0</div>
-      <svg class="curve-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M 0 0 Q 50 -10 100 40" stroke="#D79A1F" stroke-width="0.6" fill="none" opacity="0.55" vector-effect="non-scaling-stroke"/>
-      </svg>
-    </section>
+    <div class="points">
+      <a href="tutoring.html" class="point c-blue">
+        <span class="coord">(1, tutoring)</span>
+        <h3>Tutoring</h3>
+        <p>One-on-one math tutoring for grades 5 through 12, plus college-level support. Send over what you're working on.</p>
+        <span class="go">Go to tutoring <span class="arrow">→</span></span>
+      </a>
+
+      <a href="video.html" class="point c-red">
+        <span class="coord">(2, video)</span>
+        <h3>Video Creation</h3>
+        <p>Tutorials, math explainers, and live Desmos graphing streams on YouTube. Open to sponsorships and collaborations.</p>
+        <span class="go">Go to video <span class="arrow">→</span></span>
+      </a>
+
+      <a href="challenges.html" class="point c-gold">
+        <span class="coord">(3, challenges)</span>
+        <h3>Challenges</h3>
+        <p>An archive of past math/art community challenges — the prompts, the process, and what people made.</p>
+        <span class="go">Browse challenges <span class="arrow">→</span></span>
+      </a>
+
+      <a href="workshops.html" class="point c-violet">
+        <span class="coord">(4, workshops)</span>
+        <h3>Workshops</h3>
+        <p>Hands-on math/art workshops for groups — classrooms, clubs, and events.</p>
+        <span class="go">Go to workshops <span class="arrow">→</span></span>
+      </a>
+    </div>
   </div>
-</main>
+</section>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>Mathemagicland</p>
-    <p><a href="https://youtube.com/@mathemagicland" class="link-btn">▶ YouTube.com/@mathemagicland</a></p>
+<footer>
+  <div class="wrap footer-row">
+    <div>
+      <span class="label">Contact</span>
+      <a href="mailto:mathemagicland314159@gmail.com">mathemagicland314159@gmail.com</a>
+    </div>
+    <div class="foot-links">
+      <a href="https://www.youtube.com/@mathemagicland" target="_blank" rel="noopener">YouTube</a>
+      <a href="tutoring.html">Tutoring</a>
+      <a href="video.html">Video</a>
+      <a href="challenges.html">Challenges</a>
+      <a href="workshops.html">Workshops</a>
+    </div>
   </div>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>
