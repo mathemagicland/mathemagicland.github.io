@@ -64,6 +64,42 @@
   </div>
 </section> -->
 
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <!-- Load the Desmos API -->
+  <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=desmos"></script>
+
+  <style>
+    /* This is the box the graph will appear inside */
+    #calculator {
+      width: 800px;
+      height: 600px;
+      border: 1px solid gray;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>My First Desmos Graph</h1>
+
+  <!-- Empty box that JavaScript will turn into a Desmos graph -->
+  <div id="calculator"></div>
+
+  <script>
+    // Find the div whose id is "calculator"
+    const elt = document.getElementById("calculator");
+
+    // Turn that div into a Desmos calculator
+    const calculator = Desmos.GraphingCalculator(elt);
+  </script>
+
+</body>
+</html>
+  
 <footer>
   <div class="wrap footer-row">
     <div>
