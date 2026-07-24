@@ -482,3 +482,10 @@ footer .label{ margin-bottom: 6px; display:block; }
 footer a{ text-decoration: none; }
 footer a:hover{ color: var(--curve-red); }
 footer .foot-links{ display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; font-family: var(--mono); font-size: 0.82rem; }
+
+/* -- calculator -- */
+#calculator {
+  width: 600px;
+  height: 400px;
+  margin: 40px auto;
+}
