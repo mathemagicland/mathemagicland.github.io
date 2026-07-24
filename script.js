@@ -89,8 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const c2 = flip ? [x + s, y + s] : [x, y + s];
           const a1 = flip ? [Math.PI, 1.5 * Math.PI] : [1.5 * Math.PI, 2 * Math.PI];
           const a2 = flip ? [0, 0.5 * Math.PI] : [0.5 * Math.PI, Math.PI];
-          ctx.strokeStyle = pick(rand, palette).replace(/[\d.]+\)$/, '0.5)');
-          ctx.lineWidth = 5;
+          ctx.strokeStyle = pick(rand, palette).replace(/[\d.]+\)$/, '0.3)');
+          ctx.lineWidth = 10;
           ctx.beginPath(); ctx.arc(c1[0], c1[1], s / 2, a1[0], a1[1]); ctx.stroke();
           ctx.beginPath(); ctx.arc(c2[0], c2[1], s / 2, a2[0], a2[1]); ctx.stroke();
         }
