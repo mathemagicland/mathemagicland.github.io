@@ -66,8 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const strokeColor = 'rgba(216,210,190,0.65)';
 
     // Seeded once per page load (per refresh) — reused on every
-    // redraw so the pattern itself never changes mid-visit.
-    const seed = Math.floor(Math.random() * 2 ** 31);
+    // redraw so the pattern itself never changes mid-visit, unless
+    // a page opts into auto-refresh via data-refresh (see bottom).
+    let seed = Math.floor(Math.random() * 2 ** 31);
     function mulberry32(a) {
       return function () {
         a |= 0; a = (a + 0x6D2B79F5) | 0;
@@ -78,52 +79,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function pick(rand, arr) { return arr[Math.floor(rand() * arr.length)]; }
 
+    let truchetBuffer = null; // offscreen canvas, reused across redraws
+
     function drawTruchet(width, height, rand) {
-      // A real Truchet tile SET, not just one design: each cell randomly
-      // gets either (a) the original 1704 Truchet tile — a square split
-      // by a diagonal into two contrasting triangles — or (b) the
-      // quarter-circle arc tile (the common "Smith" variant). Mixing both
-      // is closer to how actual Truchet tilings are built. Bigger cells,
-      // lower opacity, so it stays out of the way of the text.
+      // Classic Truchet tile: two quarter-circle arcs per square,
+      // randomly oriented, flowing into their neighbors. Arcs are
+      // drawn fully opaque onto an offscreen buffer first, then the
+      // whole buffer is composited onto the page ONCE with a single
+      // alpha — that's what keeps overlapping arc endpoints from
+      // stacking into darker blobs (drawing each arc semi-transparent
+      // individually would double up wherever two arcs touch).
       const s = 96;
-      const alpha = '0.05)';
+      const thickness = 30;
+      const overallAlpha = 50 / 255;
+
+      if (!truchetBuffer) truchetBuffer = document.createElement('canvas');
+      if (truchetBuffer.width !== Math.ceil(width) || truchetBuffer.height !== Math.ceil(height)) {
+        truchetBuffer.width = Math.ceil(width);
+        truchetBuffer.height = Math.ceil(height);
+      }
+      const bctx = truchetBuffer.getContext('2d');
+      bctx.clearRect(0, 0, width, height);
+      bctx.lineCap = 'butt'; // avoids round-cap overlap blobs at tile junctions
+      bctx.lineWidth = thickness;
+
       for (let y = 0; y < height + s; y += s) {
         for (let x = 0; x < width + s; x += s) {
-          if (rand() < 0.5) {
-            // Diagonal-split tile
-            const flip = rand() < 0.5;
-            const cA = pick(rand, palette).replace(/[\d.]+\)$/, alpha);
-            const cB = pick(rand, palette).replace(/[\d.]+\)$/, alpha);
+          const flip = rand() < 0.5;
+          const r = s / 2;
+          bctx.strokeStyle = pick(rand, palette).replace(/[\d.]+\)$/, '1)'); // full opacity in the buffer
 
-            ctx.beginPath();
-            if (flip) { ctx.moveTo(x, y); ctx.lineTo(x + s, y); ctx.lineTo(x, y + s); }
-            else { ctx.moveTo(x, y); ctx.lineTo(x + s, y); ctx.lineTo(x + s, y + s); }
-            ctx.closePath(); ctx.fillStyle = cA; ctx.fill();
-
-            ctx.beginPath();
-            if (flip) { ctx.moveTo(x + s, y); ctx.lineTo(x + s, y + s); ctx.lineTo(x, y + s); }
-            else { ctx.moveTo(x, y); ctx.lineTo(x + s, y + s); ctx.lineTo(x, y + s); }
-            ctx.closePath(); ctx.fillStyle = cB; ctx.fill();
-
-            ctx.strokeStyle = strokeColor; ctx.lineWidth = 1;
-            ctx.beginPath();
-            if (flip) { ctx.moveTo(x + s, y); ctx.lineTo(x, y + s); }
-            else { ctx.moveTo(x, y); ctx.lineTo(x + s, y + s); }
-            ctx.stroke();
+          bctx.beginPath();
+          if (flip) {
+            bctx.arc(x, y, r, 0, Math.PI / 2);
           } else {
-            // Quarter-circle arc tile
-            const cellFlip = rand() < 0.5;
-            const c1 = cellFlip ? [x, y] : [x + s, y];
-            const c2 = cellFlip ? [x + s, y + s] : [x, y + s];
-            const a1 = cellFlip ? [Math.PI, 1.5 * Math.PI] : [1.5 * Math.PI, 2 * Math.PI];
-            const a2 = cellFlip ? [0, 0.5 * Math.PI] : [0.5 * Math.PI, Math.PI];
-            ctx.strokeStyle = pick(rand, palette).replace(/[\d.]+\)$/, alpha);
-            ctx.lineWidth = 1.75;
-            ctx.beginPath(); ctx.arc(c1[0], c1[1], s / 2, a1[0], a1[1]); ctx.stroke();
-            ctx.beginPath(); ctx.arc(c2[0], c2[1], s / 2, a2[0], a2[1]); ctx.stroke();
+            bctx.arc(x + s, y, r, Math.PI / 2, Math.PI);
           }
+          bctx.stroke();
+
+          bctx.beginPath();
+          if (flip) {
+            bctx.arc(x + s, y + s, r, Math.PI, 1.5 * Math.PI);
+          } else {
+            bctx.arc(x, y + s, r, 1.5 * Math.PI, 2 * Math.PI);
+          }
+          bctx.stroke();
         }
       }
+
+      ctx.save();
+      ctx.globalAlpha = overallAlpha;
+      ctx.drawImage(truchetBuffer, 0, 0, width, height);
+      ctx.restore();
     }
 
     function drawTriangles(width, height, rand) {
@@ -394,5 +401,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // page height right after load — same seed, so no visible change
     // beyond the pattern extending to cover any new height.
     setTimeout(draw, 500);
+
+    // Optional auto-refresh: <canvas id="tess-bg" data-refresh="5000">
+    // rerolls to a new random layout on that interval (in ms).
+    // Pages without data-refresh keep the normal static-per-load behavior.
+    const refreshMs = parseInt(canvas.dataset.refresh, 10);
+    if (!isNaN(refreshMs) && refreshMs > 0) {
+      setInterval(() => {
+        seed = Math.floor(Math.random() * 2 ** 31);
+        draw();
+      }, refreshMs);
+    }
   }
 });
