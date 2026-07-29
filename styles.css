@@ -325,7 +325,6 @@ p{ margin: 0 auto 1em; color: var(--ink-soft); max-width: 62ch; }
 
 .page-head{
   padding: clamp(46px, 7vw, 84px) 0 clamp(30px, 4vw, 46px);
-  border-bottom: 1.5px solid var(--ink);
 }
 .page-head .wrap{ max-width: 760px; }
 .page-head .eyebrow{ color: var(--curve-blue); }
