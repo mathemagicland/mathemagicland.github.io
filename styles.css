@@ -11,8 +11,8 @@
   --paper-dim:  #F2ECDD;
   --grid:       #D8D2BE;
   --grid-soft:  #E7E1CE;
-  --ink:        #212A35;
-  --ink-soft:   #57616F;
+  --ink:        #000000;
+  --ink-soft:   #000000;
   --ink-faint:  #8A93A0;
 
   --curve-red:   #E0503C;
@@ -56,7 +56,6 @@ body{
 
 body > *:not(#tess-bg){
   position: relative;
-  z-index: 1;
 }
 
 img{ max-width:100%; display:block; margin-left:auto; margin-right:auto; }
@@ -224,6 +223,8 @@ p{ margin: 0 auto 1em; color: var(--ink-soft); max-width: 62ch; }
 .hero p.lede{
   font-size: 1.15rem;
   margin-top: 6px;
+  color: var(--ink);
+  font-weight: 500;
 }
 
 .hero-actions{
@@ -359,10 +360,10 @@ p{ margin: 0 auto 1em; color: var(--ink-soft); max-width: 62ch; }
 }
 .tick-list li:last-child{ border-bottom: 1px dashed var(--grid); }
 .tick-list li::before{
-  content: "+";
+  content: "•";
   position: absolute; left: 4px; top: 13px;
   font-family: var(--mono);
-  color: var(--curve-red);
+  color: var(--ink);
 }
 
 /* ---------- Form ---------- */
