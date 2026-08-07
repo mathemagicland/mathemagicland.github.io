@@ -158,7 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function hexPoints(cx, cy, r) {
       const pts = [];
       for (let i = 0; i < 6; i++) {
-        const angle = (Math.PI / 180) * (60 * i);
+        // -90° makes this a pointy-top hexagon, matching the pointy-top
+        // spacing formula used below (hexW/vert/row-offset). Without
+        // this, the hexagons were flat-top shaped but spaced like
+        // pointy-top ones, causing overlaps/gaps between tiles.
+        const angle = (Math.PI / 180) * (60 * i - 90);
         pts.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
       }
       return pts;
