@@ -338,6 +338,17 @@ p{ margin: 0 auto 1em; color: var(--ink-soft); max-width: 62ch; }
 }
 .section:last-of-type{ border-bottom: none; }
 
+/* Compact variant: less top/bottom space, no dashed divider — for a
+   section that should sit close to the page header, like a short
+   intro/bio right under the title. */
+.section-tight{
+  padding: 8px 0 28px;
+}
+
+/* Just tightens the gap between the page header and the section right
+   after it, without touching that section's own bottom spacing/divider. */
+.section.flush-top{ padding-top: 8px; }
+
 .two-col{
   display: grid;
   grid-template-columns: 1fr 1fr;
