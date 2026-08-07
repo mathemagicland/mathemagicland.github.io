@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
       [224, 80, 60], [44, 110, 147], [198, 148, 31], [124, 92, 180], [255, 255, 255],
     ];
     const pcEdgeColor = [33, 42, 53];
-    const pcFillAlpha = 190 / 255;
+    const pcFillAlpha = 50 / 255; // matches the opacity used elsewhere on the site
 
     function pcVertexRadius(p, q) {
       return Math.sqrt(Math.cos(Math.PI/p + Math.PI/q) / Math.cos(Math.PI/p - Math.PI/q));
@@ -357,7 +357,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function drawPoincare(width, height, rand) {
       const polygons = pcBuildTiling();
-      const diskScale = Math.min(width, height) * 0.47;
+      // On narrow viewports, `height` here is the FULL scrollable page
+      // height (often much taller than the width, since content stacks
+      // vertically on mobile) — sizing off min(width,height) let that
+      // tallness shrink the disk down to a tiny circle. Instead, size
+      // mainly off width on narrow screens, with enough overflow that
+      // the disk reads as a bold background element rather than a
+      // small shape floating in empty space.
+      const isNarrow = width < 720;
+      const diskScale = isNarrow ? width * 0.85 : Math.min(width, height) * 0.47;
       const cx = width / 2, cy = height / 2;
       const rot = rand() * Math.PI * 2; // new spin each refresh
 
@@ -370,14 +378,14 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, diskScale, 0, Math.PI*2);
-      ctx.strokeStyle = `rgba(${pcEdgeColor[0]},${pcEdgeColor[1]},${pcEdgeColor[2]},0.35)`;
+      ctx.strokeStyle = `rgba(${pcEdgeColor[0]},${pcEdgeColor[1]},${pcEdgeColor[2]},0.12)`;
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
       for (const poly of polygons) {
         const c = pcPalette[poly.depth % pcPalette.length];
         ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${pcFillAlpha})`;
-        ctx.strokeStyle = `rgba(${pcEdgeColor[0]},${pcEdgeColor[1]},${pcEdgeColor[2]},0.45)`;
+        ctx.strokeStyle = `rgba(${pcEdgeColor[0]},${pcEdgeColor[1]},${pcEdgeColor[2]},0.15)`;
         ctx.lineWidth = 1.2;
         pcDrawPolygon(poly.verts, transform);
       }
