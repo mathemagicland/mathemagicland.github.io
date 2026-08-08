@@ -366,13 +366,18 @@ document.addEventListener('DOMContentLoaded', () => {
       // small shape floating in empty space.
       const isNarrow = width < 720;
       const diskScale = isNarrow ? width * 0.85 : Math.min(width, height) * 0.47;
-      const cx = width / 2, cy = height / 2;
-      const rot = rand() * Math.PI * 2; // new spin each refresh
+      // Anchored near the top of the page (not vertically centered on
+      // the full document) — otherwise, as the page gets taller (e.g.
+      // content stacking on a narrower browser), that center point
+      // drifts further down and the disk appears to "move down."
+      const cx = width / 2, cy = diskScale * 0.7 + 40;
 
-      const cosR = Math.cos(rot), sinR = Math.sin(rot);
+      // Orientation is fixed — every refresh reorders which color
+      // lands on which ring instead of spinning the disk.
+      const colorOffset = Math.floor(rand() * pcPalette.length);
+
       function transform(p) {
-        const rx = p.x*cosR - p.y*sinR, ry = p.x*sinR + p.y*cosR;
-        return { x: cx + rx*diskScale, y: cy + ry*diskScale };
+        return { x: cx + p.x*diskScale, y: cy + p.y*diskScale };
       }
 
       ctx.save();
@@ -383,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.stroke();
 
       for (const poly of polygons) {
-        const c = pcPalette[poly.depth % pcPalette.length];
+        const c = pcPalette[(poly.depth + colorOffset) % pcPalette.length];
         ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${pcFillAlpha})`;
         ctx.strokeStyle = `rgba(${pcEdgeColor[0]},${pcEdgeColor[1]},${pcEdgeColor[2]},0.15)`;
         ctx.lineWidth = 1.2;
