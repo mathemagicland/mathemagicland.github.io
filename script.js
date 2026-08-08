@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // the full document) — otherwise, as the page gets taller (e.g.
       // content stacking on a narrower browser), that center point
       // drifts further down and the disk appears to "move down."
-      const cx = width / 2, cy = diskScale * 0.7 + 40;
+      const cx = width / 2, cy = diskScale * 0.9 + 110;
 
       // Orientation is fixed — every refresh reorders which color
       // lands on which ring instead of spinning the disk.
