@@ -447,54 +447,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.restore();
     }
 
-    function drawPenrose(width, height, rand) {
-      // Penrose P3 (rhombus) tiling, built the standard way: subdividing
-      // "robinson triangles" (golden gnomon/golden triangle pairs) outward
-      // from a central "sun." Genuinely aperiodic, not a repeating grid.
-      const phi = (1 + Math.sqrt(5)) / 2;
-      const cx = width / 2, cy = height / 2;
-      const radius = Math.sqrt(width * width + height * height) / 2 + 60;
-      const targetTile = 60;
-      let depth = Math.round(Math.log(radius / targetTile) / Math.log(phi));
-      depth = Math.max(4, Math.min(depth, 7));
-
-      let tris = [];
-      for (let i = 0; i < 10; i++) {
-        const angleA = (2 * i - 1) * Math.PI / 10;
-        const angleB = (2 * i + 1) * Math.PI / 10;
-        const A = { x: cx + radius * Math.cos(angleA), y: cy + radius * Math.sin(angleA) };
-        const B = { x: cx + radius * Math.cos(angleB), y: cy + radius * Math.sin(angleB) };
-        const center = { x: cx, y: cy };
-        tris.push(i % 2 === 0 ? { c: 0, A: center, B: A, C: B } : { c: 0, A: center, B: B, C: A });
-      }
-
-      for (let d = 0; d < depth; d++) {
-        const next = [];
-        for (const t of tris) {
-          if (t.c === 0) {
-            const P = { x: t.A.x + (t.B.x - t.A.x) / phi, y: t.A.y + (t.B.y - t.A.y) / phi };
-            next.push({ c: 0, A: t.C, B: P, C: t.B });
-            next.push({ c: 1, A: P, B: t.C, C: t.A });
-          } else {
-            const Q = { x: t.B.x + (t.A.x - t.B.x) / phi, y: t.B.y + (t.A.y - t.B.y) / phi };
-            const R = { x: t.B.x + (t.C.x - t.B.x) / phi, y: t.B.y + (t.C.y - t.B.y) / phi };
-            next.push({ c: 1, A: R, B: t.C, C: t.A });
-            next.push({ c: 1, A: Q, B: R, C: t.B });
-            next.push({ c: 0, A: R, B: Q, C: t.A });
-          }
-        }
-        tris = next;
-      }
-
-      tris.forEach(t => {
-        ctx.beginPath();
-        ctx.moveTo(t.A.x, t.A.y); ctx.lineTo(t.B.x, t.B.y); ctx.lineTo(t.C.x, t.C.y);
-        ctx.closePath();
-        if (rand() > 0.4) { ctx.fillStyle = pick(rand, palette); ctx.fill(); }
-        ctx.strokeStyle = strokeColor; ctx.lineWidth = 0.75; ctx.stroke();
-      });
-    }
-
     // ============================================================
     // Real "hat" aperiodic monotile tiling (Smith/Myers/Kaplan/
     // Goodman-Strauss, 2023), ported from the p5.js version built
