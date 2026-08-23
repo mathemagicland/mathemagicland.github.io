@@ -69,11 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ============================================================
      Tessellated background
      Each page picks a different tiling via the canvas's
-     data-pattern attribute (truchet / triangles / hex / rhombille
-     / versitile). Colors are randomized once per page load using
-     a seeded PRNG, so a refresh gives new colors, but the pattern
-     never re-randomizes mid-visit (no flicker on resize / late
-     redraw — every draw() call reuses the same seed).
+     data-pattern attribute
      ============================================================ */
 
   const canvas = document.getElementById('tess-bg');
@@ -88,10 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
       'rgba(124,92,180,0.09)',  // curve-violet
     ];
     const strokeColor = 'rgba(216,210,190,0.65)';
-
-    // Seeded once per page load (per refresh) — reused on every
-    // redraw so the pattern itself never changes mid-visit, unless
-    // a page opts into auto-refresh via data-refresh (see bottom).
     let seed = Math.floor(Math.random() * 2 ** 31);
     function mulberry32(a) {
       return function () {
@@ -107,12 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function drawTruchet(width, height, rand) {
       // Classic Truchet tile: two quarter-circle arcs per square,
-      // randomly oriented, flowing into their neighbors. Arcs are
-      // drawn fully opaque onto an offscreen buffer first, then the
-      // whole buffer is composited onto the page ONCE with a single
-      // alpha — that's what keeps overlapping arc endpoints from
-      // stacking into darker blobs (drawing each arc semi-transparent
-      // individually would double up wherever two arcs touch).
+      // randomly oriented
       const s = 96;
       const thickness = 30;
       const overallAlpha = 50 / 255;
@@ -160,10 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let triangleTruchetBuffer = null; // offscreen canvas, reused across redraws
 
     function drawTriangleTruchet(width, height, rand) {
-      // One right triangle per cell, randomly rotated to one of 4
-      // positions — a straight-edged cousin of the arc-based Truchet
-      // tile. Same offscreen-buffer + single-alpha-composite approach
-      // as drawTruchet, for consistency across the site.
+      // One right triangle per cell, randomly rotated to one of 4 positions
       const s = 96;
       const overallAlpha = 50 / 255;
 
