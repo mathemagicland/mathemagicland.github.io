@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<canvas id="tess-bg" data-pattern="triangles" data-refresh="5000"></canvas>
+<canvas id="tess-bg" data-pattern="triangletruchet" data-refresh="5000"></canvas>
 
 <nav class="site-nav">
   <div class="wrap">
@@ -57,7 +57,9 @@
     <div>
       <h2>Send a message</h2>
       <div class="form-card">
-        <form data-mailto="mathemagicland314159@gmail.com" data-subject="Tutoring inquiry">
+        <form data-formspree="https://formspree.io/f/YOUR_FORM_ID" data-fallback-email="mathemagicland314159@gmail.com">
+          <input type="hidden" name="_subject" value="Tutoring inquiry — Mathemagicland">
+          <input type="hidden" name="page" value="Tutoring">
           <div class="field">
             <label for="t-name">Your name</label>
             <input type="text" id="t-name" name="name" data-label="Name" required>
@@ -79,7 +81,7 @@
             <textarea id="t-message" name="message" data-label="Message" placeholder="What are you looking for help with, and how often?" required></textarea>
           </div>
           <button type="submit" class="btn btn-solid">Send message</button>
-          <p class="form-note">Opens your email app with this filled in, addressed to mathemagicland314159@gmail.com.</p>
+          <p class="form-note">Sends directly — I'll reply to the email address you enter above.</p>
         </form>
       </div>
     </div>
