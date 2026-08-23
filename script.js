@@ -413,162 +413,10 @@ function drawArcBlobs(width, height, rand) {
   ctx.globalAlpha = 1;
 }
     
+   
     // ============================================================
-    // Poincaré disk hyperbolic tiling {3,12}, ported from the p5.js
-    // version built in the playground. Geometry is built once (in
-    // normalized disk space, radius ≤ 1) and cached — cheap to
-    // re-render with a new random rotation on every refresh, instead
-    // of rebuilding the whole tiling each time.
-    // ============================================================
-
-    const PC_P = 3, PC_Q = 12;
-    const PC_MAX_DEPTH = 100;
-    const PC_MAX_POLYGONS = 2500;
-    const pcPalette = [
-      [224, 80, 60], [44, 110, 147], [198, 148, 31], [124, 92, 180], [255, 255, 255],
-    ];
-    const pcEdgeColor = [33, 42, 53];
-    const pcFillAlpha = 50 / 255; // matches the opacity used elsewhere on the site
-
-    function pcVertexRadius(p, q) {
-      return Math.sqrt(Math.cos(Math.PI/p + Math.PI/q) / Math.cos(Math.PI/p - Math.PI/q));
-    }
-    function pcGeodesicCircle(A, B) {
-      const det = A.x * B.y - A.y * B.x;
-      if (Math.abs(det) < 1e-9) return { isLine: true, angle: Math.atan2(A.y, A.x) };
-      const rhsA = (A.x*A.x + A.y*A.y + 1) / 2;
-      const rhsB = (B.x*B.x + B.y*B.y + 1) / 2;
-      const ccx = (rhsA*B.y - rhsB*A.y) / det;
-      const ccy = (A.x*rhsB - B.x*rhsA) / det;
-      return { isLine: false, cx: ccx, cy: ccy, r2: ccx*ccx + ccy*ccy - 1 };
-    }
-    function pcReflectPoint(P, circle) {
-      if (circle.isLine) {
-        const t2 = 2 * circle.angle;
-        const c = Math.cos(t2), s = Math.sin(t2);
-        return { x: c*P.x + s*P.y, y: s*P.x - c*P.y };
-      }
-      const dx = P.x - circle.cx, dy = P.y - circle.cy;
-      const k = circle.r2 / (dx*dx + dy*dy);
-      return { x: circle.cx + k*dx, y: circle.cy + k*dy };
-    }
-    function pcPolyKey(verts) {
-      let sx = 0, sy = 0;
-      for (const v of verts) { sx += v.x; sy += v.y; }
-      sx /= verts.length; sy /= verts.length;
-      return Math.round(sx*2000) + ',' + Math.round(sy*2000);
-    }
-
-    let pcBuilt = null; // cached — geometry doesn't depend on canvas size
-
-    function pcBuildTiling() {
-      if (pcBuilt) return pcBuilt;
-      const r0 = pcVertexRadius(PC_P, PC_Q);
-      const centralVerts = [];
-      for (let i = 0; i < PC_P; i++) {
-        const ang = (2 * Math.PI * i / PC_P) - Math.PI / 2;
-        centralVerts.push({ x: r0 * Math.cos(ang), y: r0 * Math.sin(ang) });
-      }
-      const out = [{ verts: centralVerts, depth: 0 }];
-      const visited = new Set([pcPolyKey(centralVerts)]);
-      let head = 0;
-      while (head < out.length && out.length < PC_MAX_POLYGONS) {
-        const cur = out[head++];
-        if (cur.depth >= PC_MAX_DEPTH) continue;
-        for (let i = 0; i < PC_P; i++) {
-          const A = cur.verts[i], B = cur.verts[(i+1) % PC_P];
-          const circle = pcGeodesicCircle(A, B);
-          const newVerts = cur.verts.map(v => pcReflectPoint(v, circle));
-          const key = pcPolyKey(newVerts);
-          if (!visited.has(key)) {
-            visited.add(key);
-            out.push({ verts: newVerts, depth: cur.depth + 1 });
-            if (out.length >= PC_MAX_POLYGONS) break;
-          }
-        }
-      }
-      pcBuilt = out;
-      return out;
-    }
-
-    function pcDrawPolygon(verts, transform) {
-      ctx.beginPath();
-      const n = verts.length;
-      const segs = 12;
-      let started = false;
-      for (let i = 0; i < n; i++) {
-        const A = verts[i], B = verts[(i+1) % n];
-        const circle = pcGeodesicCircle(A, B);
-        for (let s = 0; s <= segs; s++) {
-          const t = s / segs;
-          let local;
-          if (circle.isLine) {
-            local = { x: A.x + (B.x-A.x)*t, y: A.y + (B.y-A.y)*t };
-          } else {
-            const a0 = Math.atan2(A.y-circle.cy, A.x-circle.cx);
-            let a1 = Math.atan2(B.y-circle.cy, B.x-circle.cx);
-            let da = a1 - a0;
-            while (da > Math.PI) da -= 2*Math.PI;
-            while (da < -Math.PI) da += 2*Math.PI;
-            const a = a0 + da*t;
-            const r = Math.sqrt(circle.r2);
-            local = { x: circle.cx + r*Math.cos(a), y: circle.cy + r*Math.sin(a) };
-          }
-          const sp = transform(local);
-          if (!started) { ctx.moveTo(sp.x, sp.y); started = true; } else { ctx.lineTo(sp.x, sp.y); }
-        }
-      }
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    }
-
-    function drawPoincare(width, height, rand) {
-      const polygons = pcBuildTiling();
-      // On narrow viewports, `height` here is the FULL scrollable page
-      // height (often much taller than the width, since content stacks
-      // vertically on mobile) — sizing off min(width,height) let that
-      // tallness shrink the disk down to a tiny circle. Instead, size
-      // mainly off width on narrow screens, with enough overflow that
-      // the disk reads as a bold background element rather than a
-      // small shape floating in empty space.
-      const isNarrow = width < 720;
-      const diskScale = isNarrow ? width * 0.85 : Math.min(width, height) * 0.47;
-      // Anchored near the top of the page (not vertically centered on
-      // the full document) — otherwise, as the page gets taller (e.g.
-      // content stacking on a narrower browser), that center point
-      // drifts further down and the disk appears to "move down."
-      const cx = width / 2, cy = diskScale * 0.9 + 110;
-
-      // Orientation is fixed — every refresh reorders which color
-      // lands on which ring instead of spinning the disk.
-      const colorOffset = Math.floor(rand() * pcPalette.length);
-
-      function transform(p) {
-        return { x: cx + p.x*diskScale, y: cy + p.y*diskScale };
-      }
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, diskScale, 0, Math.PI*2);
-      ctx.strokeStyle = `rgba(${pcEdgeColor[0]},${pcEdgeColor[1]},${pcEdgeColor[2]},0.12)`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      for (const poly of polygons) {
-        const c = pcPalette[(poly.depth + colorOffset) % pcPalette.length];
-        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${pcFillAlpha})`;
-        ctx.strokeStyle = `rgba(${pcEdgeColor[0]},${pcEdgeColor[1]},${pcEdgeColor[2]},0.15)`;
-        ctx.lineWidth = 1.2;
-        pcDrawPolygon(poly.verts, transform);
-      }
-      ctx.restore();
-    }
-
-    // ============================================================
-    // Real "hat" aperiodic monotile tiling (Smith/Myers/Kaplan/
-    // Goodman-Strauss, 2023), ported from the p5.js version built
-    // in the playground — same substitution math (originally from
+    // "hat" aperiodic monotile tiling (Smith/Myers/Kaplan/
+    // Goodman-Strauss, 2023), substitution math (originally from
     // https://github.com/isohedral/hatviz), translated to plain
     // canvas calls and wired into this file's seeded-redraw system.
     // ============================================================
@@ -885,7 +733,6 @@ function drawArcBlobs(width, height, rand) {
       else if (patternType === 'triangletruchet') drawTriangleTruchet(width, height, rand);
       else if (patternType === 'filledtruchet') drawArcBlobs(width, height, rand);
       else if (patternType === 'hex') drawHex(width, height, rand);
-      else if (patternType === 'poincare') drawPoincare(width, height, rand);
       else if (patternType === 'einstein') drawEinstein(width, height, rand);
       else drawTriangles(width, height, rand);
     }
@@ -899,9 +746,6 @@ function drawArcBlobs(width, height, rand) {
       resizeTimer = setTimeout(draw, 150);
     });
 
-    // One late correction in case content (fonts, forms) shifts
-    // page height right after load — same seed, so no visible change
-    // beyond the pattern extending to cover any new height.
     setTimeout(draw, 500);
 
     // Optional auto-refresh: <canvas id="tess-bg" data-refresh="5000">
