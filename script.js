@@ -12,33 +12,57 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
-  /* ---------- Mailto contact forms ---------- */
-  document.querySelectorAll('form[data-mailto]').forEach(form => {
-    form.addEventListener('submit', (e) => {
+  /* ---------- Contact forms (Formspree) ----------
+     Submits via fetch() so the page never navigates away — shows an
+     inline "sending / thanks / error" message instead. Every form
+     needs a required "email" field (already true for all three
+     forms) so Formspree can set it as the reply-to address on the
+     notification email. */
+  document.querySelectorAll('form[data-formspree]').forEach(form => {
+    const endpoint = form.getAttribute('data-formspree');
+
+    const status = document.createElement('p');
+    status.className = 'form-status';
+    status.setAttribute('role', 'status');
+    form.appendChild(status);
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const to = form.getAttribute('data-mailto');
-      const subjectPrefix = form.getAttribute('data-subject') || 'Message from Mathemagicland site';
+      if (!form.checkValidity()) { form.reportValidity(); return; }
 
-      const fields = Array.from(form.querySelectorAll('input, select, textarea'));
-      let bodyLines = [];
-      let nameValue = '';
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalLabel = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      status.textContent = '';
+      status.classList.remove('form-status-success', 'form-status-error');
 
-      fields.forEach(f => {
-        const fieldLabel = f.getAttribute('data-label') || f.name || '';
-        const value = f.value.trim();
-        if (!value) return;
-        if (f.name === 'name') nameValue = value;
-        bodyLines.push(`${fieldLabel}: ${value}`);
-      });
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' },
+        });
 
-      const subject = nameValue
-        ? `${subjectPrefix} — ${nameValue}`
-        : subjectPrefix;
-
-      const body = bodyLines.join('\n');
-      const mailtoUrl = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-      window.location.href = mailtoUrl;
+        if (response.ok) {
+          form.reset();
+          status.textContent = "Thanks — your message is on its way. I'll get back to you soon.";
+          status.classList.add('form-status-success');
+        } else {
+          const data = await response.json().catch(() => null);
+          const detail = data && Array.isArray(data.errors)
+            ? data.errors.map(er => er.message).join(', ')
+            : null;
+          status.textContent = detail || `Something went wrong sending that — please try again, or email ${form.getAttribute('data-fallback-email') || 'mathemagicland314159@gmail.com'} directly.`;
+          status.classList.add('form-status-error');
+        }
+      } catch (err) {
+        status.textContent = `Network error — please try again, or email ${form.getAttribute('data-fallback-email') || 'mathemagicland314159@gmail.com'} directly.`;
+        status.classList.add('form-status-error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      }
     });
   });
 
@@ -132,6 +156,48 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.drawImage(truchetBuffer, 0, 0, width, height);
       ctx.restore();
     }
+
+    let triangleTruchetBuffer = null; // offscreen canvas, reused across redraws
+
+    function drawTriangleTruchet(width, height, rand) {
+      // One right triangle per cell, randomly rotated to one of 4
+      // positions — a straight-edged cousin of the arc-based Truchet
+      // tile. Same offscreen-buffer + single-alpha-composite approach
+      // as drawTruchet, for consistency across the site.
+      const s = 96;
+      const overallAlpha = 50 / 255;
+
+      if (!triangleTruchetBuffer) triangleTruchetBuffer = document.createElement('canvas');
+      if (triangleTruchetBuffer.width !== Math.ceil(width) || triangleTruchetBuffer.height !== Math.ceil(height)) {
+        triangleTruchetBuffer.width = Math.ceil(width);
+        triangleTruchetBuffer.height = Math.ceil(height);
+      }
+      const bctx = triangleTruchetBuffer.getContext('2d');
+      bctx.clearRect(0, 0, width, height);
+
+      for (let y = 0; y < height + s; y += s) {
+        for (let x = 0; x < width + s; x += s) {
+          const orientation = Math.floor(rand() * 4);
+          let pts;
+          if (orientation === 0) pts = [[x, y], [x + s, y], [x, y + s]];
+          else if (orientation === 1) pts = [[x, y], [x + s, y], [x + s, y + s]];
+          else if (orientation === 2) pts = [[x + s, y], [x + s, y + s], [x, y + s]];
+          else pts = [[x, y], [x + s, y + s], [x, y + s]];
+
+          bctx.fillStyle = pick(rand, palette).replace(/[\d.]+\)$/, '1)'); // full opacity in the buffer
+          bctx.beginPath();
+          pts.forEach((p, i) => i === 0 ? bctx.moveTo(p[0], p[1]) : bctx.lineTo(p[0], p[1]));
+          bctx.closePath();
+          bctx.fill();
+        }
+      }
+
+      ctx.save();
+      ctx.globalAlpha = overallAlpha;
+      ctx.drawImage(triangleTruchetBuffer, 0, 0, width, height);
+      ctx.restore();
+    }
+
 
     function drawTriangles(width, height, rand) {
       const side = 92;
@@ -762,6 +828,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.clearRect(0, 0, width, height);
 
       if (patternType === 'truchet') drawTruchet(width, height, rand);
+      else if (patternType === 'triangletruchet') drawTriangleTruchet(width, height, rand);
       else if (patternType === 'hex') drawHex(width, height, rand);
       else if (patternType === 'rhombille') drawRhombille(width, height, rand);
       else if (patternType === 'versitile') drawVersitile(width, height, rand);
