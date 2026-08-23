@@ -213,7 +213,206 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     
+function drawArcBlobs(width, height, rand) {
+  // ---- settings ----
+  const tileSize = 96;
+  const alpha = 50;          // 0-255 overall opacity
+  const lineWeight = 15;     // stroke weight of the off-white curve lines
+  const arcPalette = [
+    [224, 80, 60],   // red
+    [44, 110, 147],  // blue
+    [198, 148, 31],  // gold
+    [124, 92, 180],  // violet
+  ];
+  const offWhite = [250, 246, 236];
 
+  class UnionFind {
+    constructor() { this.parent = new Map(); }
+    find(a) {
+      if (!this.parent.has(a)) this.parent.set(a, a);
+      if (this.parent.get(a) !== a) this.parent.set(a, this.find(this.parent.get(a)));
+      return this.parent.get(a);
+    }
+    union(a, b) {
+      const ra = this.find(a), rb = this.find(b);
+      if (ra !== rb) this.parent.set(ra, rb);
+    }
+  }
+
+  // offscreen buffer — tiles are drawn here at full opacity, then
+  // composited onto the visible canvas once with a single alpha
+  const pg = document.createElement('canvas');
+  pg.width = width;
+  pg.height = height;
+  const g = pg.getContext('2d');
+
+  const xs = [];
+  for (let x = 0; x < width + tileSize; x += tileSize) xs.push(x);
+  const ys = [];
+  for (let y = 0; y < height + tileSize; y += tileSize) ys.push(y);
+  const cols = xs.length;
+  const rows = ys.length;
+
+  const flips = [];
+  for (let ry = 0; ry < rows; ry++) {
+    flips.push([]);
+    for (let rx = 0; rx < cols; rx++) flips[ry].push(rand() < 0.5);
+  }
+
+  function regionMap(flip) {
+    return flip
+      ? { topTL: 'A', leftTL: 'A', rightBR: 'B', bottomBR: 'B',
+          topTR: 'M', rightTR: 'M', bottomBL: 'M', leftBL: 'M' }
+      : { topTR: 'A', rightTR: 'A', bottomBL: 'B', leftBL: 'B',
+          topTL: 'M', leftTL: 'M', rightBR: 'M', bottomBR: 'M' };
+  }
+
+  const uf = new UnionFind();
+  const rid = (ry, rx, key) => `${ry}_${rx}_${key}`;
+
+  for (let ry = 0; ry < rows; ry++) {
+    for (let rx = 0; rx < cols; rx++) {
+      const rm = regionMap(flips[ry][rx]);
+      uf.find(rid(ry, rx, rm.topTL));
+      uf.find(rid(ry, rx, rm.leftTL));
+      uf.find(rid(ry, rx, rm.rightBR));
+      uf.find(rid(ry, rx, rm.bottomBR));
+
+      if (ry > 0) {
+        const rmAbove = regionMap(flips[ry - 1][rx]);
+        uf.union(rid(ry, rx, rm.topTL), rid(ry - 1, rx, rmAbove.bottomBL));
+        uf.union(rid(ry, rx, rm.topTR), rid(ry - 1, rx, rmAbove.bottomBR));
+      }
+      if (rx > 0) {
+        const rmLeft = regionMap(flips[ry][rx - 1]);
+        uf.union(rid(ry, rx, rm.leftTL), rid(ry, rx - 1, rmLeft.rightTR));
+        uf.union(rid(ry, rx, rm.leftBL), rid(ry, rx - 1, rmLeft.rightBR));
+      }
+    }
+  }
+
+  const adj = new Map();
+  const allRoots = new Set();
+  function addRoot(r) {
+    allRoots.add(r);
+    if (!adj.has(r)) adj.set(r, new Set());
+  }
+  function addEdge(r1, r2) {
+    if (r1 === r2) return;
+    addRoot(r1); addRoot(r2);
+    adj.get(r1).add(r2);
+    adj.get(r2).add(r1);
+  }
+
+  for (let ry = 0; ry < rows; ry++) {
+    for (let rx = 0; rx < cols; rx++) {
+      const rootA = uf.find(rid(ry, rx, 'A'));
+      const rootB = uf.find(rid(ry, rx, 'B'));
+      const rootM = uf.find(rid(ry, rx, 'M'));
+      addRoot(rootA); addRoot(rootB); addRoot(rootM);
+      addEdge(rootA, rootM);
+      addEdge(rootB, rootM);
+    }
+  }
+
+  const order = [...allRoots].sort((a, b) => adj.get(b).size - adj.get(a).size);
+  const blobColorIndex = new Map();
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function backtrack(i) {
+    if (i === order.length) return true;
+    const node = order[i];
+    const usedByNeighbors = new Set();
+    for (const nb of adj.get(node)) {
+      if (blobColorIndex.has(nb)) usedByNeighbors.add(blobColorIndex.get(nb));
+    }
+    const candidates = shuffleArray([0, 1, 2, 3]);
+    for (const c of candidates) {
+      if (!usedByNeighbors.has(c)) {
+        blobColorIndex.set(node, c);
+        if (backtrack(i + 1)) return true;
+        blobColorIndex.delete(node);
+      }
+    }
+    return false;
+  }
+  backtrack(0);
+
+  function colorFor(regionId) {
+    const root = uf.find(regionId);
+    return arcPalette[blobColorIndex.get(root)];
+  }
+
+  function drawArcTile(x, y, s, flip, ry, rx) {
+    const r = s / 2;
+    const id = (key) => `${ry}_${rx}_${key}`;
+
+    const midColor = colorFor(id('M'));
+    const colorA = colorFor(id('A'));
+    const colorB = colorFor(id('B'));
+
+    let cA, cB, angles;
+    if (flip) {
+      cA = { cx: x,     cy: y     };
+      cB = { cx: x + s, cy: y + s };
+      angles = { a: 0, b: Math.PI / 2, aOff: Math.PI, bOff: Math.PI * 1.5 };
+    } else {
+      cA = { cx: x + s, cy: y     };
+      cB = { cx: x,     cy: y + s };
+      angles = { a: Math.PI / 2, b: Math.PI, aOff: Math.PI * 1.5, bOff: Math.PI * 2 };
+    }
+
+    g.fillStyle = `rgb(${midColor[0]}, ${midColor[1]}, ${midColor[2]})`;
+    g.fillRect(x, y, s, s);
+
+    g.fillStyle = `rgb(${colorA[0]}, ${colorA[1]}, ${colorA[2]})`;
+    g.beginPath();
+    g.moveTo(cA.cx, cA.cy);
+    g.arc(cA.cx, cA.cy, r, angles.a, angles.b);
+    g.closePath();
+    g.fill();
+
+    g.fillStyle = `rgb(${colorB[0]}, ${colorB[1]}, ${colorB[2]})`;
+    g.beginPath();
+    g.moveTo(cB.cx, cB.cy);
+    g.arc(cB.cx, cB.cy, r, angles.aOff, angles.bOff);
+    g.closePath();
+    g.fill();
+
+    g.strokeStyle = `rgb(${offWhite[0]}, ${offWhite[1]}, ${offWhite[2]})`;
+    g.lineWidth = lineWeight;
+    g.lineCap = 'square';
+    g.beginPath();
+    g.arc(cA.cx, cA.cy, r, angles.a, angles.b);
+    g.stroke();
+    g.beginPath();
+    g.arc(cB.cx, cB.cy, r, angles.aOff, angles.bOff);
+    g.stroke();
+  }
+
+  for (let ry = 0; ry < rows; ry++) {
+    for (let rx = 0; rx < cols; rx++) {
+      drawArcTile(xs[rx], ys[ry], tileSize, flips[ry][rx], ry, rx);
+    }
+  }
+
+  // paint the paper-color background, then composite the buffer once
+  // with a single overall alpha (keeps overlapping edges from
+  // stacking into darker blobs)
+  ctx.fillStyle = `rgb(${offWhite[0]}, ${offWhite[1]}, ${offWhite[2]})`;
+  ctx.fillRect(0, 0, width, height);
+  ctx.globalAlpha = alpha / 255;
+  ctx.drawImage(pg, 0, 0);
+  ctx.globalAlpha = 1;
+}
+    
     // ============================================================
     // Poincaré disk hyperbolic tiling {3,12}, ported from the p5.js
     // version built in the playground. Geometry is built once (in
@@ -684,6 +883,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (patternType === 'truchet') drawTruchet(width, height, rand);
       else if (patternType === 'triangletruchet') drawTriangleTruchet(width, height, rand);
+      else if (patternType === 'filledtruchet') drawArcBlobs(width, height, rand);
       else if (patternType === 'hex') drawHex(width, height, rand);
       else if (patternType === 'poincare') drawPoincare(width, height, rand);
       else if (patternType === 'einstein') drawEinstein(width, height, rand);
