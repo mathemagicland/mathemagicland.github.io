@@ -182,29 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.restore();
     }
 
-
-    function drawTriangles(width, height, rand) {
-      const side = 92;
-      const rowH = side * Math.sqrt(3) / 2;
-      let rowIndex = 0;
-      for (let y = -rowH; y < height + rowH; y += rowH, rowIndex++) {
-        let colIndex = 0;
-        for (let x = -side; x < width + side; x += side / 2, colIndex++) {
-          const up = (rowIndex + colIndex) % 2 === 0;
-          ctx.beginPath();
-          if (up) {
-            ctx.moveTo(x, y + rowH); ctx.lineTo(x + side / 2, y); ctx.lineTo(x + side, y + rowH);
-          } else {
-            ctx.moveTo(x, y); ctx.lineTo(x + side, y); ctx.lineTo(x + side / 2, y + rowH);
-          }
-          ctx.closePath();
-          const fillOrNot = rand();
-          if (fillOrNot > 0.55) { ctx.fillStyle = pick(rand, palette); ctx.fill(); }
-          ctx.strokeStyle = strokeColor; ctx.lineWidth = 1; ctx.stroke();
-        }
-      }
-    }
-
     function hexPoints(cx, cy, r) {
       const pts = [];
       for (let i = 0; i < 6; i++) {
@@ -235,65 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
-
-    function drawRhombille(width, height, rand) {
-      // Three rhombi per hex vertex — classic "isometric cube" tiling.
-      const r = 46;
-      const hexW = Math.sqrt(3) * r;
-      const vert = r * 1.5;
-      let row = 0;
-      for (let y = 0; y < height + r * 2; y += vert, row++) {
-        const xOff = (row % 2) * (hexW / 2);
-        for (let x = xOff; x < width + hexW; x += hexW) {
-          const pts = hexPoints(x, y, r);
-          const baseColor = pick(rand, palette);
-          const shades = [0.06, 0.11, 0.16];
-          for (let i = 0; i < 3; i++) {
-            const p1 = pts[(i * 2) % 6];
-            const p2 = pts[(i * 2 + 1) % 6];
-            const p3 = pts[(i * 2 + 2) % 6];
-            ctx.beginPath();
-            ctx.moveTo(x, y); ctx.lineTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.lineTo(p3[0], p3[1]);
-            ctx.closePath();
-            ctx.fillStyle = baseColor.replace(/[\d.]+\)$/, shades[i] + ')');
-            ctx.fill();
-            ctx.strokeStyle = strokeColor; ctx.lineWidth = 1; ctx.stroke();
-          }
-        }
-      }
-    }
-
-    function drawVersitile(width, height, rand) {
-      // Patchwork of squares and diagonally-split triangle pairs.
-      const s = 60;
-      for (let y = 0; y < height + s; y += s) {
-        for (let x = 0; x < width + s; x += s) {
-          const mode = rand();
-          if (mode < 0.34) {
-            ctx.beginPath(); ctx.rect(x, y, s, s);
-            if (rand() > 0.4) { ctx.fillStyle = pick(rand, palette); ctx.fill(); }
-            ctx.strokeStyle = strokeColor; ctx.stroke();
-          } else if (mode < 0.67) {
-            const flip = rand() < 0.5;
-            const c1 = pick(rand, palette), c2 = pick(rand, palette);
-            ctx.beginPath();
-            if (flip) { ctx.moveTo(x, y); ctx.lineTo(x + s, y); ctx.lineTo(x, y + s); }
-            else { ctx.moveTo(x, y); ctx.lineTo(x + s, y); ctx.lineTo(x + s, y + s); }
-            ctx.closePath(); ctx.fillStyle = c1; ctx.fill();
-            ctx.strokeStyle = strokeColor; ctx.stroke();
-
-            ctx.beginPath();
-            if (flip) { ctx.moveTo(x + s, y); ctx.lineTo(x + s, y + s); ctx.lineTo(x, y + s); }
-            else { ctx.moveTo(x, y); ctx.lineTo(x + s, y + s); ctx.lineTo(x, y + s); }
-            ctx.closePath(); ctx.fillStyle = c2; ctx.fill();
-            ctx.strokeStyle = strokeColor; ctx.stroke();
-          } else {
-            ctx.beginPath(); ctx.rect(x, y, s, s);
-            ctx.strokeStyle = strokeColor; ctx.stroke();
-          }
-        }
-      }
-    }
+    
 
     // ============================================================
     // Poincaré disk hyperbolic tiling {3,12}, ported from the p5.js
@@ -766,10 +685,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (patternType === 'truchet') drawTruchet(width, height, rand);
       else if (patternType === 'triangletruchet') drawTriangleTruchet(width, height, rand);
       else if (patternType === 'hex') drawHex(width, height, rand);
-      else if (patternType === 'rhombille') drawRhombille(width, height, rand);
-      else if (patternType === 'versitile') drawVersitile(width, height, rand);
       else if (patternType === 'poincare') drawPoincare(width, height, rand);
-      else if (patternType === 'penrose') drawPenrose(width, height, rand);
       else if (patternType === 'einstein') drawEinstein(width, height, rand);
       else drawTriangles(width, height, rand);
     }
