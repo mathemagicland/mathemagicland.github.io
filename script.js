@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok) {
           form.reset();
-          status.textContent = "Thanks — your message is on its way. I'll get back to you soon.";
+          status.textContent = "Thanks, your message is on its way. I'll get back to you soon.";
           status.classList.add('form-status-success');
         } else {
           const data = await response.json().catch(() => null);
