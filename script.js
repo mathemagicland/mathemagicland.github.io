@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function drawHex(width, height, rand) {
-      const r = 42;
+      const r = 96;
       const hexW = Math.sqrt(3) * r;
       const vert = r * 1.5;
       let row = 0;
