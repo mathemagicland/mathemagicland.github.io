@@ -203,15 +203,13 @@ function initHexagonBackground() {
   canvas.style.position = 'fixed';
   canvas.style.top = '0';
   canvas.style.left = '0';
-  canvas.style.width = '100vw';
-  canvas.style.height = '100vh';
   canvas.style.zIndex = '-1'; // sits behind normal page content
   canvas.style.display = 'block';
   document.body.prepend(canvas);
 
   const ctx = canvas.getContext('2d');
 
-  const hexSize = 60; // "radius" of hexagon, center to corner
+  const hexSize = 64; // "radius" of hexagon, center to corner
 
   const PALETTE = [
     [224, 80, 60],
@@ -221,8 +219,14 @@ function initHexagonBackground() {
   ];
 
   function resizeCanvas() {
+    // Set both the drawing-buffer size and the CSS display size from
+    // the same numbers, so they can never drift apart (e.g. 100vw vs
+    // window.innerWidth can differ by a scrollbar's width, which would
+    // stretch the canvas and crop content at the edges).
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
   }
 
   // Returns the 6 vertices (V) and 6 edge midpoints (M) of a hexagon
@@ -317,8 +321,8 @@ function initHexagonBackground() {
     const hexHeight = 2 * size;
     const vertDist = hexHeight * 0.75;
 
-    const cols = Math.ceil(canvas.width / hexWidth) + 2;
-    const rows = Math.ceil(canvas.height / vertDist) + 2;
+    const cols = Math.ceil(canvas.width / hexWidth) + 3;
+    const rows = Math.ceil(canvas.height / vertDist) + 3;
 
     // Precompute a palette index per (row,col) so each hex's color choice
     // can avoid whatever its already-assigned neighbors picked. Neighbors
@@ -373,7 +377,6 @@ function initHexagonBackground() {
     render();
   });
 }
-    
     
 function drawArcBlobs(width, height, rand) {
   // ---- settings ----
