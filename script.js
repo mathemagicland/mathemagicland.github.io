@@ -195,23 +195,185 @@ document.addEventListener('DOMContentLoaded', () => {
       return pts;
     }
 
-    function drawHex(width, height, rand) {
-      const r = 64;
-      const hexW = Math.sqrt(3) * r;
-      const vert = r * 1.5;
-      let row = 0;
-      for (let y = 0; y < height + r * 2; y += vert, row++) {
-        const xOff = (row % 2) * (hexW / 2);
-        for (let x = xOff; x < width + hexW; x += hexW) {
-          const pts = hexPoints(x, y, r);
-          ctx.beginPath();
-          pts.forEach((p, i) => i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
-          ctx.closePath();
-          if (rand() > 0.5) { ctx.fillStyle = pick(rand, palette); ctx.fill(); }
-          ctx.strokeStyle = strokeColor; ctx.lineWidth = 1; ctx.stroke();
+// Call initHexagonBackground() from any page (after this file is loaded)
+// to inject a full-viewport, fixed-position hexagon Truchet tiling behind
+// your page content. Safe to call once per page load.
+function initHexagonBackground() {
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'fixed';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100vw';
+  canvas.style.height = '100vh';
+  canvas.style.zIndex = '-1'; // sits behind normal page content
+  canvas.style.display = 'block';
+  document.body.prepend(canvas);
+
+  const ctx = canvas.getContext('2d');
+
+  const hexSize = 60; // "radius" of hexagon, center to corner
+
+  const PALETTE = [
+    [224, 80, 60],
+    [44, 110, 147],
+    [198, 148, 31],
+    [124, 92, 180]
+  ];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  // Returns the 6 vertices (V) and 6 edge midpoints (M) of a hexagon
+  // centered at the origin, in pointy-top orientation.
+  function computeHexPoints(size) {
+    const V = [];
+    const M = [];
+    for (let k = 0; k < 6; k++) {
+      const a = (Math.PI / 180) * (60 * k - 30);
+      V.push({ x: size * Math.cos(a), y: size * Math.sin(a) });
+    }
+    for (let k = 0; k < 6; k++) {
+      const p1 = V[k];
+      const p2 = V[(k + 1) % 6];
+      M.push({ x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 });
+    }
+    return { V, M };
+  }
+
+  function drawHexagon(x, y, size, colorIndex) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    const { V } = computeHexPoints(size);
+    ctx.beginPath();
+    ctx.moveTo(V[0].x, V[0].y);
+    for (let i = 1; i < V.length; i++) ctx.lineTo(V[i].x, V[i].y);
+    ctx.closePath();
+
+    const c = PALETTE[colorIndex];
+    ctx.fillStyle = `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${50 / 255})`;
+    ctx.fill();
+
+    // Clip the arcs to this hexagon's own outline so a neighboring hex's
+    // thick stroke can't bleed across the shared edge into this one.
+    ctx.save();
+    ctx.clip();
+    drawTruchetArcs(size);
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  // Draws the classic hexagonal Truchet pattern: three 120-degree arcs,
+  // each centered on a hexagon vertex and connecting the midpoints of
+  // that vertex's two adjacent edges. Randomly picks between the "even"
+  // vertex set (0,2,4) and the "odd" set (1,3,5) so tiles vary.
+  function drawTruchetArcs(size) {
+    const { V, M } = computeHexPoints(size);
+    const arcRadius = size / 2; // side length == size for a regular hexagon
+
+    const useEven = Math.random() < 0.5;
+    const centers = useEven ? [0, 2, 4] : [1, 3, 5];
+
+    ctx.strokeStyle = 'rgba(250, 246, 236, 1)';
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'butt'; // equivalent of p5's SQUARE cap
+
+    for (const i of centers) {
+      const c = V[i];
+      const mPrev = M[(i + 5) % 6];
+      const mCur = M[i];
+
+      const a1 = Math.atan2(mPrev.y - c.y, mPrev.x - c.x);
+      const a2 = Math.atan2(mCur.y - c.y, mCur.x - c.x);
+
+      // Normalize so we always sweep the short (120-degree) way around.
+      const TWO_PI = Math.PI * 2;
+      let diff = ((a2 - a1) + TWO_PI) % TWO_PI;
+      let start, end;
+      if (diff > Math.PI) {
+        start = a2;
+        end = a1 + TWO_PI;
+      } else {
+        start = a1;
+        end = a1 + diff;
+      }
+
+      // Extend the sweep slightly so neighboring arcs overlap a hair at
+      // their shared endpoint, hiding the thin antialiasing seam that a
+      // hard square cap otherwise leaves between them.
+      const pad = (Math.PI / 180) * 3;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, arcRadius, start - pad, end + pad);
+      ctx.stroke();
+    }
+  }
+
+  function drawHexGrid(size) {
+    // Flat-top hexagon layout using axial-ish spacing
+    const hexWidth = Math.sqrt(3) * size;
+    const hexHeight = 2 * size;
+    const vertDist = hexHeight * 0.75;
+
+    const cols = Math.ceil(canvas.width / hexWidth) + 2;
+    const rows = Math.ceil(canvas.height / vertDist) + 2;
+
+    // Precompute a palette index per (row,col) so each hex's color choice
+    // can avoid whatever its already-assigned neighbors picked. Neighbors
+    // relative to the offset ("odd-r") layout used below: the hex to the
+    // left, and the two hexes directly above (which two depends on
+    // whether this row is shifted or not).
+    const colorGrid = {};
+    for (let row = -1; row < rows; row++) {
+      for (let col = -1; col < cols; col++) {
+        const isOdd = row % 2 !== 0;
+        const forbidden = new Set();
+        const left = colorGrid[`${row},${col - 1}`];
+        if (left !== undefined) forbidden.add(left);
+        if (isOdd) {
+          const upA = colorGrid[`${row - 1},${col}`];
+          const upB = colorGrid[`${row - 1},${col + 1}`];
+          if (upA !== undefined) forbidden.add(upA);
+          if (upB !== undefined) forbidden.add(upB);
+        } else {
+          const upA = colorGrid[`${row - 1},${col - 1}`];
+          const upB = colorGrid[`${row - 1},${col}`];
+          if (upA !== undefined) forbidden.add(upA);
+          if (upB !== undefined) forbidden.add(upB);
         }
+        const choices = [0, 1, 2, 3].filter(i => !forbidden.has(i));
+        colorGrid[`${row},${col}`] = choices[Math.floor(Math.random() * choices.length)];
       }
     }
+
+    for (let row = -1; row < rows; row++) {
+      for (let col = -1; col < cols; col++) {
+        const x = col * hexWidth + (row % 2 !== 0 ? hexWidth / 2 : 0);
+        const y = row * vertDist;
+        const colorIndex = colorGrid[`${row},${col}`];
+        drawHexagon(x, y, size, colorIndex);
+      }
+    }
+  }
+
+  function render() {
+    ctx.fillStyle = 'rgb(250, 246, 236)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawHexGrid(hexSize);
+  }
+
+  resizeCanvas();
+  render();
+  setInterval(render, 5000); // refresh the arc/color configuration every 5 seconds
+
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    render();
+  });
+}
+    
     
 function drawArcBlobs(width, height, rand) {
   // ---- settings ----
@@ -732,7 +894,7 @@ function drawArcBlobs(width, height, rand) {
       if (patternType === 'truchet') drawTruchet(width, height, rand);
       else if (patternType === 'triangletruchet') drawTriangleTruchet(width, height, rand);
       else if (patternType === 'filledtruchet') drawArcBlobs(width, height, rand);
-      else if (patternType === 'hex') drawHex(width, height, rand);
+      else if (patternType === 'hex') initHexagonBackground();
       else if (patternType === 'einstein') drawEinstein(width, height, rand);
       else drawTriangles(width, height, rand);
     }
