@@ -370,7 +370,6 @@ function initHexagonBackground() {
 
   resizeCanvas();
   render();
-  setInterval(render, 5000); // refresh the arc/color configuration every 5 seconds
 
   window.addEventListener('resize', () => {
     resizeCanvas();
